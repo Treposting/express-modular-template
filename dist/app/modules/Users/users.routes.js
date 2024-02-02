@@ -1,0 +1,33 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.userRoutes = void 0;
+const express_1 = __importDefault(require("express"));
+const authorization_1 = require("../../../middlewares/authorization");
+const verifyToken_1 = require("../../../middlewares/verifyToken");
+const uploadToS3_1 = require("../../../utils/uploadToS3");
+const users_controllers_1 = require("./users.controllers");
+const router = express_1.default.Router();
+router.post('/auth/signup', users_controllers_1.signUpController);
+router.post('/auth/login', users_controllers_1.logInController);
+router.get('/all', verifyToken_1.verifyToken, (0, authorization_1.authorization)(['superAdmin', 'hr', 'developer']), users_controllers_1.getAllUsersController);
+router.get('/orgsUser/all', verifyToken_1.verifyToken, (0, authorization_1.authorization)(['superAdmin', 'admin', 'hr', 'developer']), users_controllers_1.getAnOrgUsersController);
+router.get('/getme', verifyToken_1.verifyToken, users_controllers_1.getMeController);
+router.get('/single/details/:id', verifyToken_1.verifyToken, (0, authorization_1.authorization)(['superAdmin', 'admin', 'hr', 'developer']), users_controllers_1.getSpecificUserController);
+router.get('/onlycaregivers', verifyToken_1.verifyToken, (0, authorization_1.authorization)(['superAdmin', 'admin', 'hr', 'developer']), users_controllers_1.getLoggedInOrgCaregiversController);
+router.get('/onlyclients', verifyToken_1.verifyToken, (0, authorization_1.authorization)(['superAdmin', 'admin', 'hr', 'developer']), users_controllers_1.getLoggedInOrgClientssController);
+router.get('/allCaregivers', verifyToken_1.verifyToken, (0, authorization_1.authorization)(['superAdmin', 'hr', 'developer']), users_controllers_1.getAllOrgCaregiversController);
+router.post('/auth/forget-password', users_controllers_1.forgotPasswordController);
+router.post('/auth/reset-password', users_controllers_1.resetPasswordController);
+router.post('/upload-image', uploadToS3_1.uploadToS3.array('images', 1), users_controllers_1.uploadProfilePicture);
+router.post('/upload-documents', uploadToS3_1.uploadToS3.array('document', 1), users_controllers_1.uploadDocuments);
+router.put('/update-documents', uploadToS3_1.uploadToS3.array('document', 1), users_controllers_1.updateDocuments);
+router.get('/get-registration-counts', users_controllers_1.getUserRegistrationCountsController);
+// deleteDocument
+router.delete('/delete-document', verifyToken_1.verifyToken, (0, authorization_1.authorization)(['superAdmin', 'admin', 'hr', 'developer']), users_controllers_1.deleteUserDocumentController);
+router.patch('/update-status/:id', verifyToken_1.verifyToken, (0, authorization_1.authorization)(['superAdmin', 'admin', 'hr', 'developer']), users_controllers_1.updateStatusController);
+router.patch('/update-details/:id', verifyToken_1.verifyToken, (0, authorization_1.authorization)(['superAdmin', 'admin', 'hr', 'developer', 'caregiver']), users_controllers_1.updateUserDetailsController);
+router.patch('/update-password', verifyToken_1.verifyToken, (0, authorization_1.authorization)(['superAdmin', 'admin', 'hr', 'developer', 'caregiver']), users_controllers_1.updatePasswordController);
+exports.userRoutes = router;
